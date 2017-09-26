@@ -1,0 +1,32 @@
+{
+  "name": "http-api-assignment-ii",
+  "version": "1.0.0",
+  "description": "Second HTTP API Assignment",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel ./client --out-file ./hosted/bundle.js",
+    "watch": "babel --watch ./client --out-file ./hosted/bundle.js",
+    "nodemon": "nodemon --watch ./server ./server/app.js",
+    "start": "node ./server/app.js",
+    "pretest": "eslint ./server --fix",
+    "test": "echo \"Tests Complete\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RyanSpencer/http-api-assignment-ii.git"
+  },
+  "author": "Ryan Spencer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RyanSpencer/http-api-assignment-ii/issues"
+  },
+  "homepage": "https://github.com/RyanSpencer/http-api-assignment-ii#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "eslint": "^4.7.0",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "nodemon": "^1.12.1"
+  }
+}
