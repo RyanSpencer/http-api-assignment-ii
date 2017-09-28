@@ -2,8 +2,8 @@ const crypto = require('crypto');
 
 const users = {};
 
-const etag = crypto.createHash('sha1').update(JSON.stringify(users));
-const digest = etag.digest('hex');
+let etag = crypto.createHash('sha1').update(JSON.stringify(users));
+let digest = etag.digest('hex');
 
 // General response function for get requests
 const respond = (request, response, status, object) => {
@@ -87,6 +87,10 @@ const addUser = (request, response, body) => {
 
   users[body.name].name = body.name;
   users[body.name].age = body.age;
+
+  etag = crypto.createHash('sha1').update(JSON.stringify(users));
+
+  digest = etag.digest('hex');
 
   // return 201 for a new user
   if (responseCode === 201) {
