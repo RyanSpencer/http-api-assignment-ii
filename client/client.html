@@ -6,7 +6,126 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script type="text/babel">
+    //Function which parses JSON and adds messages or user objects when needed
+    const parseJSON = (xhr, content) => {
+      const obj = JSON.parse(xhr.response);
+      console.dir(obj);
+      
+      if (obj.message) {
+        const p = document.createElement('p');
+        p.textContent = `Message: ${obj.message}`;
+        content.appendChild(p);
+      }
+      
+      if (obj.users) {
+        const userList = document.createElement('p');
+        const users = JSON.stringify(obj.users);
+        userList.textContent = users;
+        content.appendChild(userList);
+      }
+    };
+  
+    //Changing content based on status codes we recieve
+    const handleResponse = (xhr, parseResponse) => {
+      const content = document.querySelector('#content');
+      
+      console.log(xhr.status);
+      
+      switch(xhr.status) {
+        case 200: 
+        case 304:
+          content.innerHTML = '<b>Success</b>';
+          break;
+        case 201:
+          content.innerHTML = '<b>Create</b>';
+          break;
+        case 204:
+          content.innerHTML = '<b>Updated (No Content)</b>';
+          break;
+        case 400:
+          content.innerHTML = '<b>Bad Request</b>';
+          break;
+        case 404:
+          content.innerHTML = '<b>Resource Not Found</b>';
+          break;
+        default:
+          content.innerHTML = '<b>Error code not implemented by client';
+          break;
+      }
+      
+      if (parseResponse) {
+        parseJSON(xhr, content);
+      }
+      else {
+        console.log('recieved');
+      }         
+    };
 
+    //called whenever we want to add a new user
+    const sendPost = (e, nameForm) => {
+      const nameAction = nameForm.getAttribute('action');
+      const nameMethod = nameForm.getAttribute('method');
+      
+      const nameField = nameForm.querySelector('#nameField');
+      const ageField = nameForm.querySelector('#ageField');
+      
+      const xhr = new XMLHttpRequest();
+      
+      xhr.open(nameMethod, nameAction);
+      
+      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      
+      xhr.setRequestHeader('Accept', 'application/json');
+      
+      xhr.onload = () => handleResponse(xhr, true);
+      
+      const formData = `name=${nameField.value}&age=${ageField.value}`;
+      
+      xhr.send(formData);
+      
+      e.preventDefault();
+      
+      return false;
+    };
+    
+    //called whenever we want to get user information
+    const requestUpdate = (e, userForm) => {
+      const url = userForm.querySelector('#urlField').value;
+      
+      const method = userForm.querySelector('#methodSelect').value;
+      
+      const xhr = new XMLHttpRequest();
+      
+      xhr.open(method, url);
+      
+      xhr.setRequestHeader('Accept', 'application/json');
+      
+      if (method == 'get') {
+        xhr.onload = () => handleResponse(xhr, true);
+      } 
+      else {
+        xhr.onload = () => handleResponse(xhr, false);
+      }
+      
+      xhr.send();
+      
+      e.preventDefault();
+      
+      return false;
+    };
+
+    const init = () => {
+      const userForm = document.querySelector('#userForm');
+      const nameForm = document.querySelector('#nameForm');
+      
+      const getUsers = (e) => requestUpdate(e, userForm);
+      const addUser = (e) => sendPost(e, nameForm);
+      
+      userForm.addEventListener('submit', getUsers);
+      nameForm.addEventListener('submit', addUser);
+    };
+
+    window.onload = init;
   </script>
 </head>
 <body>
